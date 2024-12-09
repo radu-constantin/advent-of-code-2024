@@ -7,13 +7,37 @@ $pages = [];
 while ($line = fgets($stream)) {
   $line = trim($line);
   if (strpos($line, '|')) {
-    $rules[]=preg_split('/\|/', trim($line));
+    $rules[]=preg_split('/\|/', $line);
   } elseif (strlen($line) > 0) {
-    $pages[]=preg_split('/\'/', $line);
+    $pages[]=preg_split('/,/', $line);
   }
 }
 
-var_dump($pages);
+$correctPages = [];
+
+foreach($pages as $page) {
+  $correctPage = true;
+  forEach($rules as $rule) {
+    if (in_array($rule[0], $page) && in_array($rule[1], $page)) {
+      if (array_search($rule[0], $page) > array_search($rule[1], $page)) {
+        $correctPage = false;
+        break;
+      }
+    }
+  }
+  if ($correctPage) {
+    $correctPages[] = $page;
+  }
+}
+
+$middlePageSum = 0;
+
+foreach($correctPages as $page) {
+  $index = intdiv(count($page), 2);
+  $middlePageSum += $page[$index];
+}
+
+echo $middlePageSum;
 
 
 
