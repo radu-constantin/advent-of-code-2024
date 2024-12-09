@@ -34,13 +34,14 @@ $middlePageSum = 0;
 
 foreach($correctPages as $page) {
   $index = intdiv(count($page), 2);
+  // var_dump($page);
+  echo ("$index ");
   $middlePageSum += $page[$index];
+  echo ("$page[$index] \n");
+  // echo ("Sum: $middlePageSum \n");
 }
 
 echo $middlePageSum;
-
-
-
 /*
 Go through each page list;
   - for each page list check if update pages are included;
