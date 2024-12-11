@@ -13,32 +13,48 @@ while ($line = fgets($stream)) {
   }
 }
 
-$correctPages = [];
+$correctedPages = [];
 
 foreach($pages as $page) {
-  $correctPage = true;
   forEach($rules as $rule) {
     if (in_array($rule[0], $page) && in_array($rule[1], $page)) {
-      if (array_search($rule[0], $page) > array_search($rule[1], $page)) {
-        $correctPage = false;
-        break;
-      }
+        $firstIndex = array_search($rule[0], $page);
+        $secondIndex = array_search($rule[1], $page);
+
+        if ($firstIndex > $secondIndex) {
+          $correctedPages[] = $page;
+          break;
+        }
     }
-  }
-  if ($correctPage) {
-    $correctPages[] = $page;
   }
 }
 
+for ($i = 0; $i <= 100; $i += 1) {
+  foreach($correctedPages as &$page) {
+    foreach($rules as $rule) {
+      if (in_array($rule[0], $page) && in_array($rule[1], $page)) {
+        $firstIndex = array_search($rule[0], $page);
+        $secondIndex = array_search($rule[1], $page);
+        if ($firstIndex > $secondIndex) {
+          $tempValue = $page[$firstIndex];
+          $page[$firstIndex] = $page[$secondIndex];
+          $page[$secondIndex] = $tempValue;
+        }
+      }
+    }
+  }
+}
+
+// var_dump($correctedPages);
+unset($page);
+
 $middlePageSum = 0;
 
-foreach($correctPages as $page) {
-  $index = intdiv(count($page), 2);
-  // var_dump($page);
-  echo ("$index ");
+for($i = 0; $i < count($correctedPages); $i += 1) {
+  $page = $correctedPages[$i];
+  $count = count($page);
+  $index = intdiv($count, 2);
   $middlePageSum += $page[$index];
-  echo ("$page[$index] \n");
-  // echo ("Sum: $middlePageSum \n");
 }
 
 echo $middlePageSum;
