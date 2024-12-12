@@ -65,3 +65,24 @@ In this case the exit points would be line 0 (first) and 2 (last) entirely (if t
 
 6. Take steps as in mental model;
 */
+
+$inputMap = [];
+
+$stream = fopen('./day_6_input.txt', 'r');
+while ($line = fgets($stream)) {
+  $inputMap[] = str_split($line);
+}
+
+$guardPosition = null;
+
+for ($i = 0; $i < count($inputMap); $i += 1) {
+  $line = $inputMap[$i];
+  $position = array_search('^', $line);
+
+  if ($position) {
+    $guardPosition = [$i, $position];
+    break;
+  }
+}
+
+var_dump($guardPosition);
