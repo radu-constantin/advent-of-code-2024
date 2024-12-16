@@ -66,23 +66,53 @@ In this case the exit points would be line 0 (first) and 2 (last) entirely (if t
 6. Take steps as in mental model;
 */
 
+function switchDirection(&$guardDirection) {
+  if ($guardDirection === '^') {
+    $guardDirection = '>';
+  };
+}
+
 $inputMap = [];
+$route = [];
 
 $stream = fopen('./day_6_input.txt', 'r');
 while ($line = fgets($stream)) {
   $inputMap[] = str_split($line);
 }
 
+$guardCoordinates = null;
 $guardPosition = null;
+$guardDirection = '^';
 
 for ($i = 0; $i < count($inputMap); $i += 1) {
   $line = $inputMap[$i];
   $position = array_search('^', $line);
 
   if ($position) {
-    $guardPosition = [$i, $position];
+    $guardCoordinates = [$i, $position];
+    $route[] = $guardCoordinates;
     break;
   }
 }
 
-var_dump($guardPosition);
+$guardPosition = $inputMap[$guardCoordinates[0]][$guardCoordinates[1]];
+
+for ($i = 0; $i < 10; $i += 1) {
+  if ($guardDirection === '^') {
+    $nextCoordinates = [$guardCoordinates[0] - 1, $guardCoordinates[1]];
+    $nextPosition = $inputMap[$nextCoordinates[0]][$nextCoordinates[1]];
+    if ($nextPosition !== '#') {
+      $guardCoordinates = $nextCoordinates;
+      $guardPosition = $nextPosition;
+      $route[] = $guardCoordinates;
+    }
+  }
+}
+
+var_dump($route);
+
+// var_dump($nextPosition);
+// var_dump($inputMap[$guardPosition[0] - 1][$guardPosition[1]]);
+// var_dump($guardPosition);
+// var_dump($route);
+// var_dump($inputMap[$guardPosition[0]][$guardPosition[1]]);
