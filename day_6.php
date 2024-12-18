@@ -66,22 +66,59 @@ In this case the exit points would be line 0 (first) and 2 (last) entirely (if t
 6. Take steps as in mental model;
 */
 
+$inputMap = [];
+$route = [];
+
 function switchDirection(&$guardDirection) {
   if ($guardDirection === '^') {
     $guardDirection = '>';
-  };
+  } elseif ($guardDirection === '>') {
+    $guardDirection = 'v';
+  } elseif ($guardDirection === 'v') {
+    $guardDirection = '<';
+  } elseif ($guardDirection === '<') {
+    $guardDirection = '^';
+  }
 }
 
-$inputMap = [];
-$route = [];
+function checkPosition($position, $map) {
+  return $map[$position[0]][$position[1]];
+}
+
+function isPotentialExit($position) {
+  global $lastLineIndex, $lastPositionIndex;
+  if ($position[0] === 0 || $position[0] === $lastLineIndex || $position[1] === 0 || $position[1] === $lastPositionIndex) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isExit($position) {
+  global $inputMap;
+  if (!isPotentialExit($position)) {
+    return false;
+  } else {
+    if (checkPosition($position, $inputMap) !== '#') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+
 
 $stream = fopen('./day_6_input.txt', 'r');
 while ($line = fgets($stream)) {
   $inputMap[] = str_split($line);
 }
 
-$guardCoordinates = null;
+$lastLineIndex = count($inputMap) - 1;
+$lastPositionIndex = count($inputMap[1]) - 1;
+
 $guardPosition = null;
+$nextPosition = null;
 $guardDirection = '^';
 
 for ($i = 0; $i < count($inputMap); $i += 1) {
@@ -89,27 +126,34 @@ for ($i = 0; $i < count($inputMap); $i += 1) {
   $position = array_search('^', $line);
 
   if ($position) {
-    $guardCoordinates = [$i, $position];
-    $route[] = $guardCoordinates;
+    $guardPosition = [$i, $position];
+    $route[] = $guardPosition;
     break;
   }
-}
+};
 
-$guardPosition = $inputMap[$guardCoordinates[0]][$guardCoordinates[1]];
-
-for ($i = 0; $i < 10; $i += 1) {
+while (!isExit($guardPosition)) {
   if ($guardDirection === '^') {
-    $nextCoordinates = [$guardCoordinates[0] - 1, $guardCoordinates[1]];
-    $nextPosition = $inputMap[$nextCoordinates[0]][$nextCoordinates[1]];
-    if ($nextPosition !== '#') {
-      $guardCoordinates = $nextCoordinates;
-      $guardPosition = $nextPosition;
-      $route[] = $guardCoordinates;
-    }
+    $nextPosition = [$guardPosition[0] - 1, $guardPosition[1]];
+  } elseif ($guardDirection === ">") {
+    $nextPosition = [$guardPosition[0], $guardPosition[1] + 1];
+  } elseif ($guardDirection=== 'v') {
+    $nextPosition = [$guardPosition[0] + 1, $guardPosition[1]];
+  } elseif ($guardDirection=== '<') {
+    $nextPosition = [$guardPosition[0], $guardPosition[1] - 1];
+  }
+
+  if (checkPosition($nextPosition, $inputMap) !== '#') {
+    $guardPosition = $nextPosition;
+    if (!in_array($guardPosition, $route)) {
+      $route[] = $guardPosition;
+    } 
+  } else {
+    switchDirection($guardDirection);
   }
 }
 
-var_dump($route);
+var_dump(count($route));
 
 // var_dump($nextPosition);
 // var_dump($inputMap[$guardPosition[0] - 1][$guardPosition[1]]);
